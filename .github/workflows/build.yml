@@ -1,0 +1,34 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: PowerShell/PowerShell
+        ref: v7.2.0-preview.7
+
+    - name: Init Env
+      run: |
+        Import-Module ./build.psm1
+        Start-PSBootstrap
+
+    - name: Build Debug
+      run: |
+        Import-Module ./build.psm1
+        Start-PSBuild -Configuration Debug -Runtime fxdependent-win-desktop
+
+    - name: Build Release
+      run: |
+        $env:Path = "$env:LocalAppdata\Microsoft\dotnet;" + $env:Path
+        dotnet publish -c Release -r win10-x64 --self-contained=false -p:PublishReadyToRun=true -p:DebugType=none /p:IsWindows=true -p:SDKToUse=Microsoft.NET.Sdk.WindowsDesktop
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: src/powershell-win-core/bin/Release/net6.0/win10-x64/publish
+        name: Pwsh
