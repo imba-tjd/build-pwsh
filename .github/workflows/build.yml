@@ -26,9 +26,10 @@ jobs:
     - name: Build Release
       run: |
         $env:Path = "$env:LocalAppdata\Microsoft\dotnet;" + $env:Path
-        dotnet publish -c Release -r win10-x64 --self-contained=false -p:PublishReadyToRun=true -p:DebugType=none /p:IsWindows=true -p:SDKToUse=Microsoft.NET.Sdk.WindowsDesktop
+        dotnet publish -c Release -r win10-x64 -o built --self-contained=false -p:PublishReadyToRun=true -p:DebugType=none /p:IsWindows=true /p:SDKToUse=Microsoft.NET.Sdk.WindowsDesktop
 
     - uses: actions/upload-artifact@v2
       with:
-        path: src/powershell-win-core/bin/Release/net6.0/win10-x64/publish
+#         path: src/powershell-win-core/bin/Release/net6.0/win10-x64/publish
+        path: built
         name: Pwsh
